@@ -27,7 +27,6 @@ bionic@Ubuntu-MSI:~/Загрузки/nmap-master$ history | tail -n 10
  1950  cd ./nmap-master/
  1951  sudo ./configure --without-zenmap
  1952  sudo make
- 1953  sudo make install 
 ```
 Из сборки проекта уберем GUI (zenmap), так как для фаззинга будет использоваться консольная версия
 
@@ -58,5 +57,40 @@ bionic@Ubuntu-MSI:~$ ./cpverify_for_directories.sh
 ```
 <h2 id="2">Фаззинг</h2>
 
+- соберем AFlplusplus
+```shell
+git clone https://github.com/AFLplusplus/AFLplusplus.git
+cd AFLplusplus/
+make
+```
+- пересоберем проект с фаззером
+```shell
+sudo CC=afl-gcc CXX=afl-gcc++ ./configure --without-zenmap --disable-shared
+```
+- Создадим согласно заданию 2 корпуса (серый и белый ip)
+```shell
+mkdir nmap_corpus
+cd ./nmap_corpus/
+echo "192.168.1.1" > ip1.txt
+echo ya.ru > ip2.txt
+```
+- Запустим фаззинг
+```shell
+2120  sudo CC=afl-clang-fast CXX=afl-clang-fast++ ./configure  --disable-shared --without-zenmap
+2121  sudo make
+```
+- Посмотрим на статистику
+```shell
+sudo apt install gnuplot
+afl-plot ./out/default/ plot_data
+```
+- Полученные результаты лежат в папке фаззинга 
+
 
 <h2 id="3">Сбор покрытия проведенного фаззинг тестирования</h2>
+
+- f
+
+```shell
+sudo apt install lcov
+```
