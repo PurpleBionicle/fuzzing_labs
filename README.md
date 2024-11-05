@@ -76,8 +76,7 @@ echo ya.ru > ip2.txt
 ```
 - Запустим фаззинг
 ```shell
-2120  sudo CC=afl-clang-fast CXX=afl-clang-fast++ ./configure  --disable-shared --without-zenmap
-2121  sudo make
+afl-gcc -i nmap_corpus/ -o out/ -- ./nmap @@
 ```
 - Посмотрим на статистику
 ```shell
@@ -95,27 +94,16 @@ afl-plot ./out/default/ plot_data
 sudo apt install lcov
 sudo CC="gcc --coverage" CXX="g++ --coverage" ./configure --disable-shared --without-zenmap
 sudo make
+```
+- Выполним наши корпуса на проекте, чтобы собрать покрытие 
+```shell
 for file in out/default/queue/*; do ./nmap $file; done
 find . -name "*.gcda"
 ```
-- Отсутствуют gcda файлы 
+- Приведем в человекочитаемый вид 
 ```shell
-bionic@Ubuntu-MSI:~/nmap-maste$ lcov -o cov.info -c -d .
-Capturing coverage data from .
-Subroutine read_intermediate_text redefined at /usr/bin/geninfo line 2623.
-Subroutine read_intermediate_json redefined at /usr/bin/geninfo line 2655.
-Subroutine intermediate_text_to_info redefined at /usr/bin/geninfo line 2703.
-Subroutine intermediate_json_to_info redefined at /usr/bin/geninfo line 2792.
-Subroutine get_output_fd redefined at /usr/bin/geninfo line 2872.
-Subroutine print_gcov_warnings redefined at /usr/bin/geninfo line 2900.
-Subroutine process_intermediate redefined at /usr/bin/geninfo line 2930.
-Found gcov version: 11.4.0
-Using intermediate gcov format
-Scanning . for .gcda files ...
-geninfo: WARNING: no .gcda files found in . - skipping!
-Finished .info-file creation
-bionic@Ubuntu-MSI:~/nmap-maste$ genhtml -o cov_data cov.info
-Reading data file cov.info
-genhtml: ERROR: no valid records found in tracefile cov.info
+sudo lcov -o cov.info -c -d .
+genhtml -o cov_data cov.info
 ```
-- cov.info - 0 байт
+
+![coverage](coverage/coverage.png)
